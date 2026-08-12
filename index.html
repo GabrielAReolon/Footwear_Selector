@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head><!-- PWA e iOS Web App -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ShoeSelect">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShoeSelect</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+<section id="loginScreen" class="login-screen">
+    <div class="login-background"></div>
+    <div class="login-card glass">
+        <div class="login-brand">
+            <div class="login-logo">👟</div>
+            <span class="eyebrow">SHOESELECT</span>
+            <h1>Bem-vindo</h1>
+            <p>Entre para acessar suas coleções e modelos.</p>
+        </div>
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="loginEmail">E-mail</label>
+                <input id="loginEmail" type="email" placeholder="seu@email.com" autocomplete="username" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Senha</label>
+                <div class="password-wrapper">
+                    <input id="loginPassword" type="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+                    <button id="togglePassword" type="button" class="password-toggle">◉</button>
+                </div>
+            </div>
+            <div id="loginError" class="login-error">E-mail ou senha incorretos.</div>
+            <button class="login-button" type="submit">Entrar</button>
+        </form>
+        <div class="demo-account">
+            <span>Ambiente de demonstração</span>
+            <small>Cliente: cliente@shoeselect.com / 123456</small>
+            <small>Admin: admin@shoeselect.com / admin123</small>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     APLICATIVO
+===================================================== -->
+<div id="appScreen" class="app-screen">
+    <header class="topbar">
+        <div class="topbar-brand">
+            <div class="brand-icon">👟</div>
+            <div>
+                <strong>ShoeSelect</strong>
+                <span>Seleção de modelos</span>
+            </div>
+        </div>
+        
+        <nav id="mainNavigation" class="main-navigation">
+            <!-- CLIENTE -->
+            <button class="top-nav-button" data-page="homePage" data-client-only type="button">
+                <span style="font-size: 14px;">⌂</span> Início
+            </button>
+            <button class="top-nav-button" data-page="approvedPage" data-client-only type="button">
+                <span style="font-size: 14px;">★</span> Aprovados
+            </button>
+            <!-- ADMIN -->
+            <button class="top-nav-button" data-page="homePage" data-admin-only type="button">
+                <span style="font-size: 14px;">⌂</span> Início
+            </button>
+            <button class="top-nav-button" data-page="adminPage" data-admin-only type="button">
+                <span style="font-size: 14px;">⊞</span> Coleções
+            </button>
+        </nav>
+
+        <div class="account-area" style="display: flex; gap: 10px; align-items: center;">
+            <button id="themeToggle" class="account-button" type="button" title="Mudar Tema">
+                <span id="themeIcon">🌙</span>
+            </button>
+            
+            <button id="accountButton" class="account-button" type="button">
+                <span id="accountInitial">G</span>
+            </button>
+            <div id="accountMenu" class="account-menu glass">
+                <div class="account-menu-header">
+                    <strong id="accountName">Usuário</strong>
+                    <span id="accountRole">Cliente</span>
+                </div>
+                <button id="editProfileBtn" class="account-menu-item" type="button">Editar perfil <span>✎</span></button>
+                <button id="switchAccountBtn" class="account-menu-item" type="button">Trocar de conta <span>⟲</span></button>
+                <button id="logoutButton" class="account-menu-item" style="color: var(--red);" type="button">Sair <span>→</span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        <!-- ==============================================
+             HOME CLIENTE (Layout Dividido)
+        =============================================== -->
+        <main id="homePage" class="page">
+            <div class="home-layout">
+                
+                <!-- LADO ESQUERDO: Coleções -->
+                <div class="home-left">
+                    <section id="continueApprovalSection" style="display: none;">
+                        <div class="section-heading">
+                            <div>
+                                <span>EM ANDAMENTO</span>
+                                <h2>Continuar aprovação</h2>
+                            </div>
+                        </div>
+                        <div id="continueApprovalGrid" class="collection-grid"></div>
+                    </section>
+
+                    <section>
+                        <div class="section-heading">
+                            <div>
+                                <span>COLEÇÕES DISPONÍVEIS</span>
+                                <h2>Escolher coleção</h2>
+                            </div>
+                        </div>
+                        <div id="clientCollections" class="collection-grid"></div>
+                    </section>
+
+                    <section id="previousCollectionsSection" style="display: none;">
+                        <div class="section-heading">
+                            <div>
+                                <span>HISTÓRICO</span>
+                                <h2>Coleções anteriores</h2>
+                            </div>
+                        </div>
+                        <div id="previousCollectionsGrid" class="collection-grid"></div>
+                    </section>
+
+                    <section id="lastApprovedSection" style="display: none;">
+                        <div class="section-heading">
+                            <div>
+                                <span>REFERÊNCIA VISUAL</span>
+                                <h2>Últimos modelos aprovados</h2>
+                            </div>
+                        </div>
+                        <div id="lastApprovedGrid" class="category-preview"></div>
+                    </section>
+                </div>
+
+                <!-- LADO DIREITO: Liquid Glass Box -->
+                <div class="home-right">
+                    <div class="liquid-glass-box welcome-huge">
+                        <span class="eyebrow">SELEÇÃO DE MODELOS</span>
+                        <h1>Início</h1>
+                        <p>Bem-vindo ao seu painel. Continue de onde parou ou explore novas coleções.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- ==============================================
+             APROVADOS CLIENTE
+        =============================================== -->
+        <main id="approvedPage" class="page">
+            <div class="page-title">
+                <span class="eyebrow">SUA SELEÇÃO</span>
+                <h1>Aprovados</h1>
+                <p>Modelos que você aprovou.</p>
+            </div>
+            <div id="approvedCategoryFilters" class="category-filter"></div>
+            <div id="approvedModelsContainer" class="approved-groups"></div>
+        </main>
+
+        <!-- ==============================================
+             ADMIN - COLEÇÕES
+        =============================================== -->
+        <main id="adminPage" class="page">
+            <div class="page-title">
+                <span class="eyebrow">ADMINISTRAÇÃO</span>
+                <h1>Coleções</h1>
+                <p>Gerencie coleções e modelos.</p>
+            </div>
+            <button id="openCollectionModal" class="create-collection glass" type="button">
+                <div class="create-icon">＋</div>
+                <div>
+                    <strong>Criar coleção</strong>
+                    <span>Adicione uma nova coleção de modelos.</span>
+                </div>
+                <b>→</b>
+            </button>
+            <div id="adminCollections" class="admin-collections"></div>
+        </main>
+
+        <!-- ==============================================
+             COLEÇÃO
+        =============================================== -->
+        <main id="collectionPage" class="page">
+            <div class="internal-header">
+                <button id="backToHome" class="back-button" type="button">←</button>
+                <div>
+                    <span class="eyebrow">COLEÇÃO</span>
+                    <h1 id="collectionPageTitle">Coleção</h1>
+                </div>
+            </div>
+            <div id="collectionSummary" class="collection-summary glass"></div>
+            <div id="adminGlobalAddContainer"></div>
+            <div id="collectionCategories" class="category-grid"></div>
+
+            <div style="margin-top: 50px;">
+                <div class="section-heading">
+                    <div>
+                        <span>VISÃO GERAL DA COLEÇÃO</span>
+                        <h2>Modelos</h2>
+                    </div>
+                </div>
+                <div id="collectionModelFilters" class="category-filter" style="margin-bottom: 15px;">
+                    <button class="category-filter-button active" data-col-filter="all">Todos</button>
+                    <button class="category-filter-button" data-col-filter="approved">Aprovados</button>
+                    <button class="category-filter-button" data-col-filter="cancelled">Cancelados</button>
+                </div>
+                <div id="collectionModelsGrid" class="category-preview"></div>
+            </div>
+        </main>
+
+        <!-- ==============================================
+             VISUALIZAÇÃO DE CATEGORIA
+        =============================================== -->
+        <main id="categoryPage" class="page">
+            <div class="internal-header">
+                <button id="backToCollection" class="back-button" type="button">←</button>
+                <div>
+                    <span id="categoryCollectionName" class="eyebrow">COLEÇÃO</span>
+                    <h1 id="categoryPageTitle">Categoria</h1>
+                </div>
+            </div>
+            <div id="categoryClientSummary" class="category-summary glass"></div>
+            <button id="startCategoryButton" class="primary-button" type="button">Começar seleção →</button>
+            <div id="categoryPreview" class="category-preview"></div>
+        </main>
+
+        <!-- ==============================================
+             ESCOLHA DOS MODELOS (SWIPE)
+        =============================================== -->
+        <main id="selectionPage" class="page">
+            <div class="selection-header">
+                <button id="backToCategory" class="back-button" type="button">←</button>
+                <div>
+                    <span id="selectionCollectionName" class="eyebrow">COLEÇÃO</span>
+                    <h1 id="selectionCategoryName">Categoria</h1>
+                </div>
+            </div>
+            <div class="selection-status">
+                <div>
+                    <strong id="selectionCounter">0 de 0</strong>
+                    <span>analisados</span>
+                </div>
+                <span id="selectionRemaining">0 restantes</span>
+            </div>
+            <div class="progress">
+                <div id="selectionProgress" class="progress-fill"></div>
+            </div>
+            <div id="selectionContainer" class="selection-container"></div>
+        </main>
+    </div>
+
+    <!-- =================================================
+         MODAIS
+    ================================================== -->
+    
+    <!-- MODAL PERFIL -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal glass" style="max-width: 450px;">
+            <button id="closeProfileModal" class="close-modal" type="button">×</button>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div class="profile-photo-edit" id="profilePhotoPreview">
+                    <span id="profilePhotoInitialLarge">G</span>
+                    <div class="profile-photo-overlay">📷</div>
+                </div>
+                <input type="file" id="profilePhotoInput" accept="image/*" hidden>
+                <h2 style="margin-top: 15px; font-size: 24px; letter-spacing: -0.5px;">Editar Perfil</h2>
+                <span class="eyebrow" style="margin-top: 5px;">CONTA</span>
+            </div>
+
+            <button id="toggleCredentialsBtn" class="secondary-button" style="width: 100%; margin-bottom: 20px; border: 1px dashed var(--border);">🔒 Alterar E-mail ou Senha</button>
+
+            <div id="credentialsSection" style="display: none; transition: all 0.4s ease;">
+                <div class="form-group">
+                    <label>Senha Antiga <span style="color: var(--red);">*</span></label>
+                    <input id="profileOldPassword" type="password" placeholder="Necessária para salvar alterações">
+                </div>
+                <div class="form-group">
+                    <label>Novo E-mail</label>
+                    <input id="profileEmail" type="email" placeholder="seu@email.com">
+                </div>
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label>Nova Senha</label>
+                    <input id="profilePassword" type="password" placeholder="Deixe em branco para não alterar">
+                </div>
+            </div>
+
+            <button id="saveProfileBtn" class="primary-button" type="button">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <!-- MODAL TROCAR DE CONTA -->
+    <div id="switchAccountModal" class="modal-overlay">
+        <div class="modal glass" style="max-width: 400px; text-align: center;">
+            <button id="closeSwitchAccountModal" class="close-modal" type="button">×</button>
+            <div class="modal-icon" style="margin: 0 auto 15px; font-size: 24px;">⟲</div>
+            <h2 style="margin-bottom: 5px;">Trocar de conta</h2>
+            <p style="color: var(--muted); font-size: 11px; margin-bottom: 25px;">Selecione uma conta salva ou adicione uma nova.</p>
+            
+            <div id="savedAccountsList" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                <!-- Preenchido via JS -->
+            </div>
+            
+            <button id="addNewAccountBtn" class="secondary-button" style="width: 100%;" type="button">＋ Entrar com outra conta</button>
+        </div>
+    </div>
+
+    <!-- MODAL NOVA COLEÇÃO -->
+    <div id="collectionModal" class="modal-overlay">
+        <div class="modal liquid-glass-modal" style="max-width: 550px;">
+            <button id="closeCollectionModal" class="close-modal" type="button">×</button>
+            <div class="modal-title">
+                <div class="modal-icon">✦</div>
+                <div>
+                    <span class="eyebrow">NOVA COLEÇÃO</span>
+                    <h2>Criar coleção</h2>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Nome da coleção</label>
+                <input id="collectionName" type="text" placeholder="Ex.: Verão 2026">
+            </div>
+            <div class="form-group">
+                <div class="label-row">
+                    <label>Categorias</label>
+                    <span id="selectedCount">0 selecionadas</span>
+                </div>
+                <div id="categoriesContainer" class="categories"></div>
+            </div>
+            <button id="createCollectionButton" class="primary-button" style="margin-top: 15px;" type="button">Criar coleção</button>
+        </div>
+    </div>
+
+    <!-- MODAL CADASTRO/EDIÇÃO INDIVIDUAL -->
+    <div id="modelModal" class="modal-overlay">
+        <div class="modal liquid-glass-modal model-modal">
+            <button id="closeModelModal" class="close-modal" type="button">×</button>
+            <div class="modal-title">
+                <div class="modal-icon">👟</div>
+                <div>
+                    <span id="modelModalCategory" class="eyebrow">CATEGORIA</span>
+                    <h2 id="modelModalTitle">Adicionar modelo</h2>
+                </div>
+            </div>
+            <div id="singleModelForm" class="single-model-form"></div>
+            <div class="single-model-navigation" id="singleModelNav">
+                <button id="previousModelButton" class="secondary-button" type="button">← Anterior</button>
+                <span id="modelStep">1 / 1</span>
+                <button id="nextModelButton" class="secondary-button" type="button">Próximo →</button>
+            </div>
+            <button id="saveCurrentModelButton" class="primary-button" type="button">Salvar modelo</button>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR EXCLUSÃO DE COLEÇÃO -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal liquid-glass-modal confirm-modal" style="max-width: 400px; text-align: center; margin: 0 auto;">
+            <div class="confirm-icon" style="margin: 0 auto 16px;">!</div>
+            <h2>Excluir coleção?</h2>
+            <p style="color: var(--muted); font-size: 11px; margin-top: 8px;">Todos os modelos e categorias desta coleção serão removidos. Esta ação não pode ser desfeita.</p>
+            <div class="confirm-actions" style="margin-top: 24px;">
+                <button id="cancelDelete" class="secondary-button" type="button">Cancelar</button>
+                <button id="confirmDelete" class="danger-button" type="button">Sim, excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR EXCLUSÃO DE MODELO INDIVIDUAL -->
+    <div id="deleteModelConfirmModal" class="modal-overlay">
+        <div class="modal liquid-glass-modal confirm-modal" style="max-width: 400px; text-align: center; margin: 0 auto;">
+            <div class="confirm-icon" style="margin: 0 auto 16px;">!</div>
+            <h2>Excluir modelo?</h2>
+            <p style="color: var(--muted); font-size: 11px; margin-top: 8px;">Tem certeza que deseja excluir este modelo definitivamente?</p>
+            <div class="confirm-actions" style="margin-top: 24px;">
+                <button id="cancelDeleteModelBtn" class="secondary-button" type="button">Cancelar</button>
+                <button id="confirmDeleteModelBtn" class="danger-button" type="button">Sim, excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
